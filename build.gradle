@@ -6,6 +6,9 @@ plugins {
 group 'ru.amelin.motorent'
 version '1.0'
 
+//todo почему-то работает только на Java 8 (на других версиях возвращается 404)
+sourceCompatibility = 1.8
+
 repositories {
     mavenCentral()
 }
@@ -18,7 +21,7 @@ def hibernateValidatorVersion = '8.0.0.Final'
 def mysqlConnectorVersion = '8.0.30'
 
 dependencies {
-//    testImplementationи  group: 'junit', name: 'junit', version: '4.12'
+    testImplementation  group: 'junit', name: 'junit', version: '4.12'
     implementation "org.springframework:spring-core:${springVersion}"
     implementation "org.springframework:spring-context:${springVersion}"
     implementation "org.springframework:spring-web:${springVersion}"
