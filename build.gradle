@@ -1,0 +1,38 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+group 'ru.amelin.motorent'
+version '1.0'
+
+repositories {
+    mavenCentral()
+}
+
+def springVersion = '5.3.23'
+def lombokVersion = '1.18.24'
+def thymeleafVersion = '3.1.0.M3'
+def servletApiVersion = '4.0.1'
+def hibernateValidatorVersion = '8.0.0.Final'
+def mysqlConnectorVersion = '8.0.30'
+
+dependencies {
+//    testImplementationи  group: 'junit', name: 'junit', version: '4.12'
+    implementation "org.springframework:spring-core:${springVersion}"
+    implementation "org.springframework:spring-context:${springVersion}"
+    implementation "org.springframework:spring-web:${springVersion}"
+    implementation "org.springframework:spring-jdbc:${springVersion}"
+    implementation "org.springframework:spring-webmvc:${springVersion}"
+    implementation "org.thymeleaf:thymeleaf-spring5:${thymeleafVersion}"
+    providedCompile "javax.servlet:javax.servlet-api:${servletApiVersion}"
+    implementation "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    implementation "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
+    implementation "mysql:mysql-connector-java:${mysqlConnectorVersion}"
+}
+
+war {
+    archiveFileName = 'motorent.war'
+    destinationDirectory = file("C:\\tomcat\\webapps")
+}
