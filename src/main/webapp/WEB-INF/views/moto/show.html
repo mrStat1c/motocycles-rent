@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Motocycles</title>
+</head>
+
+<body>
+
+<p><b>Motocycle data:</b></p>
+<p th:text="'Model: ' + ${moto.getModel()}"></p>
+<p th:text="'Vin: ' + ${moto.getVin()}"></p>
+<p th:text="'Release year: ' + ${moto.getReleaseYear()}"></p>
+<p th:text="'Weight: ' + ${moto.getWeight()}"></p>
+<p th:text="'Power: ' + ${moto.getPower()}"></p>
+<p th:text="'Type: ' + ${moto.getType()}" th:if="${moto.getType() != NULL}"></p>
+
+<a th:href="@{/moto/{id}/update(id=${moto.getId()})}">Edit</a>
+
+<!--сделать кнопку неактивной если мотоцикл находится в аренде-->
+<form th:method="DELETE" th:action="@{/moto/{id}(id=${moto.getId()})}">
+    <input type="submit" value="Delete"/>
+</form>
+
+</body>
+</html>

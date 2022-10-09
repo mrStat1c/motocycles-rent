@@ -26,10 +26,42 @@ public class CustomerService {
 
     public Customer get(int id) {
         String sql = "SELECT * FROM customer WHERE id=?";
-        return this.jdbcTemplate.query(sql, new Object[]{id}, rowMapper)
+        return this.jdbcTemplate.query(sql, new Object[]{id}, this.rowMapper)
                 .stream()
                 .findAny()
                 .orElse(null);
+    }
+
+    public void add(Customer customer) {
+        String sql = "INSERT INTO customer (name, age, driver_exp, driver_lic, email, phone) VALUES (?, ?, ?, ?, ?, ?)";
+        this.jdbcTemplate.update(
+                sql,
+                customer.getName(),
+                customer.getAge(),
+                customer.getDriveExperience(),
+                customer.getDriverLicenseNumber(),
+                customer.getEmail(),
+                customer.getPhoneNumber()
+        );
+    }
+
+    public void update(Customer customer) {
+        String sql = "UPDATE customer SET name = ?, age = ?, driver_exp = ?, driver_lic = ?, email = ?, phone = ? WHERE id = ?";
+        this.jdbcTemplate.update(
+                sql,
+                customer.getName(),
+                customer.getAge(),
+                customer.getDriveExperience(),
+                customer.getDriverLicenseNumber(),
+                customer.getEmail(),
+                customer.getPhoneNumber(),
+                customer.getId()
+        );
+    }
+
+    public void delete(int customerId) {
+        String sql = "DELETE FROM customer WHERE id = ?";
+        this.jdbcTemplate.update(sql, customerId);
     }
 }
 

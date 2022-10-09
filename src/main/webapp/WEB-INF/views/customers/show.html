@@ -10,17 +10,18 @@
 
 <p><b>Customer data:</b></p>
 <p th:text="'Name: ' + ${customer.getName()}"></p>
-<p th:text="'Age: ' + ${customer.getAge()}" th:if="${customer.getAge() != NULL}">VALUE</p>
-<p th:text="'Drive experience: ' + ${customer.getDriveExperience()}" th:if="${customer.getDriveExperience() != NULL}">VALUE</p>
-<p th:text="'Driver license number: ' + ${customer.getDriverLicenseNumber()}">VALUE</p>
-<p th:text="'Email: ' + ${customer.getEmail()}" th:if="${customer.getEmail() != NULL}">VALUE</p>
-<p th:text="'Phone number: ' + ${customer.getPhoneNumber()}">VALUE</p>
+<p th:text="'Age: ' + ${customer.getAge()}" th:if="${customer.getAge() != NULL}"></p>
+<p th:text="'Drive experience: ' + ${customer.getDriveExperience()}" th:if="${customer.getDriveExperience() != NULL}"></p>
+<p th:text="'Driver license number: ' + ${customer.getDriverLicenseNumber()}"></p>
+<p th:text="'Email: ' + ${customer.getEmail()}" th:if="${customer.getEmail() != NULL}"></p>
+<p th:text="'Phone number: ' + ${customer.getPhoneNumber()}"></p>
 
-<!--<a th:href="@{/people/{id}/edit(id=${person.getId()})}">Edit</a>-->
+<a th:href="@{/customers/{id}/update(id=${customer.getId()})}">Edit</a>
 
-<!--<form th:method="DELETE" th:action="@{/people/{id}(id=${person.getId()})}">-->
-<!--    <input type="submit" value="Delete"/>-->
-<!--</form>-->
+<!--сделать кнопку неактвиной если у чела есть арендованный мотоцикл-->
+<form th:method="DELETE" th:action="@{/customers/{id}(id=${customer.getId()})}">
+    <input type="submit" value="Delete"/>
+</form>
 
 </body>
 </html>

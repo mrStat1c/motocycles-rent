@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Motocycles</title>
+</head>
+
+<body>
+
+
+<p><b>Motocycles:</b></p>
+<div th:each="moto : ${motoList}">
+    <a th:href="@{/moto/{id}(id=${moto.getId()})}"
+       th:text="${moto.getModel() + ', ' + moto.getPower()}"></a>
+</div>
+
+<br/>
+<hr/>
+
+<a href="/motorent/moto/create">Create new motocycle</a>
+
+</body>
+</html>
