@@ -5,7 +5,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.amelin.motorent.dao.CustomerService;
 import ru.amelin.motorent.dao.MotocycleService;
+import ru.amelin.motorent.models.Customer;
 import ru.amelin.motorent.models.Motocycle;
 
 @Controller
@@ -13,10 +15,12 @@ import ru.amelin.motorent.models.Motocycle;
 public class MotocycleController {
 
     private MotocycleService motocycleService;
+    private CustomerService customerService;
 
     @Autowired
-    public MotocycleController(MotocycleService motocycleService) {
+    public MotocycleController(MotocycleService motocycleService, CustomerService customerService) {
         this.motocycleService = motocycleService;
+        this.customerService = customerService;
     }
 
     @GetMapping
@@ -27,7 +31,13 @@ public class MotocycleController {
 
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int motoId, Model model) {
-        model.addAttribute("moto", motocycleService.get(motoId));
+        Motocycle motocycle = motocycleService.get(motoId);
+        model.addAttribute("moto", motocycle);
+        if (motocycle.getCustomerId() != null) {
+            model.addAttribute("customer", customerService.get(motocycle.getCustomerId()));
+        } else {
+            model.addAttribute("customers", customerService.getAll());
+        }
         return "moto/show";
     }
 
@@ -71,5 +81,17 @@ public class MotocycleController {
     public String delete(@PathVariable("id") int motoId) {
         this.motocycleService.delete(motoId);
         return "redirect:/moto";
+    }
+
+    @PatchMapping("/{id}/release")
+    public String release(@PathVariable("id") int motoId) {
+        this.motocycleService.release(motoId);
+        return "redirect:/moto/{id}";
+    }
+
+    @PatchMapping("/{id}/assign")
+    public String assign(@PathVariable("id") int motoId, @ModelAttribute("renter") Customer customer) {
+        this.motocycleService.assign(motoId, customer.getId());
+        return "redirect:/moto/{id}";
     }
 }

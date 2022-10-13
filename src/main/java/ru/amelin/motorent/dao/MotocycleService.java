@@ -32,6 +32,11 @@ public class MotocycleService {
                 .orElse(null);
     }
 
+    public List<Motocycle> getRentedByCustomerId(int customerId){
+        String sql = "SELECT * FROM motocycle WHERE customer_id=?";
+        return this.jdbcTemplate.query(sql, new Object[]{customerId}, this.rowMapper);
+    }
+
     public void add(Motocycle motocycle) {
         String sql = "INSERT INTO motocycle (model, vin, `release`, weight, power, type) VALUES (?, ?, ?, ?, ?, ?)";
         this.jdbcTemplate.update(
@@ -64,4 +69,13 @@ public class MotocycleService {
         this.jdbcTemplate.update(sql, motoId);
     }
 
+    public void release(int motoId) {
+        String sql = "UPDATE motocycle SET customer_id = NULL WHERE id = ?";
+        this.jdbcTemplate.update(sql, motoId);
+    }
+
+    public void assign(int motoId, int customerId) {
+        String sql = "UPDATE motocycle SET customer_id = ? WHERE id = ?";
+        this.jdbcTemplate.update(sql, customerId, motoId);
+    }
 }

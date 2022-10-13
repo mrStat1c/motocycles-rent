@@ -3,6 +3,7 @@ package ru.amelin.motorent.dao;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.amelin.motorent.models.Motocycle;
+import ru.amelin.motorent.utils.RowMapperUtil;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ public class MotocycleRowMapper implements RowMapper<Motocycle> {
 
         Motocycle motocycle = new Motocycle();
         motocycle.setId(rs.getInt("id"));
+        motocycle.setCustomerId(RowMapperUtil.getIntValue(rs, "customer_id"));
         motocycle.setModel(rs.getString("model"));
         motocycle.setVin(rs.getString("vin"));
         motocycle.setReleaseYear(rs.getInt("release"));

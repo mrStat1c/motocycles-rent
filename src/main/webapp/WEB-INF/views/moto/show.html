@@ -16,7 +16,30 @@
 <p th:text="'Power: ' + ${moto.getPower()}"></p>
 <p th:text="'Type: ' + ${moto.getType()}" th:if="${moto.getType() != NULL}"></p>
 
-<a th:href="@{/moto/{id}/update(id=${moto.getId()})}">Edit</a>
+<div th:if="${customer}">
+    <b><p th:text="'Rented by: ' + ${customer.getName()}"></p></b>
+    <form th:method="PATCH" th:action="@{/moto/{id}/release(id=${moto.getId()})}">
+        <input type="submit" value="Release"/>
+    </form>
+</div>
+
+<div th:if="${customers}">
+    <b><p th:text="'Free for rent'"></p></b>
+    <form th:method="PATCH" th:action="@{/moto/{id}/assign(id=${moto.getId()})}">
+        <label for="customer">Choose customer:</label>
+<!--        не работает из-за th:field -->
+<!--        <select id="customer" th:object="${renter}" th:field="*{id}">-->
+        <select id="customer" th:object="${renter}">
+            <option th:each="customer: ${customers}" th:value="${customer.getId()}" th:text="${customer.getName()}">
+            </option>
+        </select>
+        <input type="submit" value="Assign"/>
+    </form>
+</div>
+
+<form th:method="GET" th:action="@{/moto/{id}/update(id=${moto.getId()})}">
+    <input type="submit" th:value="Update">
+</form>
 
 <!--сделать кнопку неактивной если мотоцикл находится в аренде-->
 <form th:method="DELETE" th:action="@{/moto/{id}(id=${moto.getId()})}">

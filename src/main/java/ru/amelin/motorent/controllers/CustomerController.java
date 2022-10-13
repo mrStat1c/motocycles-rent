@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.amelin.motorent.dao.CustomerService;
+import ru.amelin.motorent.dao.MotocycleService;
 import ru.amelin.motorent.models.Customer;
 
 
@@ -14,10 +15,12 @@ import ru.amelin.motorent.models.Customer;
 public class CustomerController {
 
     private final CustomerService customerService;
+    private final MotocycleService motocycleService;
 
     @Autowired
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService, MotocycleService motocycleService) {
         this.customerService = customerService;
+        this.motocycleService = motocycleService;
     }
 
     @GetMapping
@@ -29,6 +32,7 @@ public class CustomerController {
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int customerId, Model model) {
         model.addAttribute("customer", customerService.get(customerId));
+        model.addAttribute("motoList", motocycleService.getRentedByCustomerId(customerId));
         return "customers/show";
     }
 
