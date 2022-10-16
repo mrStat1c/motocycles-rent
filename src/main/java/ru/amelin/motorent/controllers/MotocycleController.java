@@ -9,18 +9,21 @@ import ru.amelin.motorent.dao.CustomerService;
 import ru.amelin.motorent.dao.MotocycleService;
 import ru.amelin.motorent.models.Customer;
 import ru.amelin.motorent.models.Motocycle;
+import ru.amelin.motorent.validators.MotocycleValidator;
 
 @Controller
 @RequestMapping("/moto")
 public class MotocycleController {
 
-    private MotocycleService motocycleService;
-    private CustomerService customerService;
+    private final MotocycleService motocycleService;
+    private final CustomerService customerService;
+    private final MotocycleValidator motocycleValidator;
 
     @Autowired
-    public MotocycleController(MotocycleService motocycleService, CustomerService customerService) {
+    public MotocycleController(MotocycleService motocycleService, CustomerService customerService, MotocycleValidator motocycleValidator) {
         this.motocycleService = motocycleService;
         this.customerService = customerService;
+        this.motocycleValidator = motocycleValidator;
     }
 
     @GetMapping
@@ -33,6 +36,7 @@ public class MotocycleController {
     public String show(@PathVariable("id") int motoId, Model model) {
         Motocycle motocycle = motocycleService.get(motoId);
         model.addAttribute("moto", motocycle);
+        model.addAttribute("renter", new Customer());
         if (motocycle.getCustomerId() != null) {
             model.addAttribute("customer", customerService.get(motocycle.getCustomerId()));
         } else {
@@ -49,11 +53,11 @@ public class MotocycleController {
     @PostMapping("/create")
     public String create(@ModelAttribute("moto") Motocycle motocycle,
                          BindingResult bindingResult) {
-//        personValidator.validate(person, bindingResult);
-
-//        if (bindingResult.hasErrors()) {
-//            return "people/new";
-//        }
+        motocycleValidator.validate(motocycle, bindingResult);
+        //todo работают только ошибки, найденные через motocycleValidator, аннотации на model классе не работают
+        if (bindingResult.hasErrors()) {
+            return "moto/create";
+        }
         this.motocycleService.add(motocycle);
         return "redirect:/moto";
     }
@@ -68,11 +72,11 @@ public class MotocycleController {
     public String update(@PathVariable("id") int motoId,
                          @ModelAttribute("moto") Motocycle motocycle,
                          BindingResult bindingResult) {
-//        personValidator.validate(person, bindingResult);
-
-//        if (bindingResult.hasErrors()) {
-//            return "people/new";
-//        }
+        motocycleValidator.validate(motocycle, bindingResult);
+        //todo работают только ошибки, найденные через motocycleValidator, аннотации на model классе не работают
+        if (bindingResult.hasErrors()) {
+            return "moto/update";
+        }
         this.motocycleService.update(motocycle);
         return "redirect:/moto";
     }

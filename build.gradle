@@ -19,8 +19,7 @@ def thymeleafVersion = '3.1.0.M3'
 def servletApiVersion = '4.0.1'
 def hibernateValidatorVersion = '8.0.0.Final'
 def mysqlConnectorVersion = '8.0.30'
-def logbackVersion = '1.4.3'
-def slf4jVersion = '2.0.3'
+def log4jVersion = '2.4.1'
 
 dependencies {
     testImplementation  group: 'junit', name: 'junit', version: '4.12'
@@ -35,8 +34,8 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
     implementation "mysql:mysql-connector-java:${mysqlConnectorVersion}"
-    implementation "ch.qos.logback:logback-core:${logbackVersion}"
-    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
 
 
 }

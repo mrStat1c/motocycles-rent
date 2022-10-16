@@ -78,4 +78,9 @@ public class MotocycleService {
         String sql = "UPDATE motocycle SET customer_id = ? WHERE id = ?";
         this.jdbcTemplate.update(sql, customerId, motoId);
     }
+
+    public boolean exists(String vin) {
+        String sql = "SELECT * FROM motocycle WHERE vin=?";
+        return this.jdbcTemplate.query(sql, new Object[]{vin}, this.rowMapper).size() > 0;
+    }
 }

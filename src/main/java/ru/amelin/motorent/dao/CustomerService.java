@@ -63,5 +63,10 @@ public class CustomerService {
         String sql = "DELETE FROM customer WHERE id = ?";
         this.jdbcTemplate.update(sql, customerId);
     }
+
+    public boolean exists(String driver_lic) {
+        String sql = "SELECT * FROM customer WHERE driver_lic=?";
+        return this.jdbcTemplate.query(sql, new Object[]{driver_lic}, this.rowMapper).size() > 0;
+    }
 }
 

@@ -1,5 +1,8 @@
 package ru.amelin.motorent.controllers;
 
+import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.amelin.motorent.dao.CustomerService;
 import ru.amelin.motorent.dao.MotocycleService;
 import ru.amelin.motorent.models.Customer;
+import ru.amelin.motorent.validators.CustomerValidator;
 
 
 @Controller
@@ -16,11 +20,14 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final MotocycleService motocycleService;
+    private final CustomerValidator customerValidator;
+    private static final Logger log = LogManager.getLogger(CustomerController.class.getName());
 
     @Autowired
-    public CustomerController(CustomerService customerService, MotocycleService motocycleService) {
+    public CustomerController(CustomerService customerService, MotocycleService motocycleService, CustomerValidator customerValidator) {
         this.customerService = customerService;
         this.motocycleService = motocycleService;
+        this.customerValidator = customerValidator;
     }
 
     @GetMapping
@@ -42,13 +49,14 @@ public class CustomerController {
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute("customer") Customer customer,
+    public String create(@ModelAttribute("customer") @Valid Customer customer,
                          BindingResult bindingResult) {
-//        personValidator.validate(person, bindingResult);
+        customerValidator.validate(customer, bindingResult);
 
-//        if (bindingResult.hasErrors()) {
-//            return "people/new";
-//        }
+        //todo работают только ошибки, найденные через customerValidator, аннотации на model классе не работают
+        if (bindingResult.hasErrors()) {
+            return "customers/create";
+        }
         this.customerService.add(customer);
         return "redirect:/customers";
     }
@@ -61,13 +69,14 @@ public class CustomerController {
 
     @PatchMapping("/{id}")
     public String update(@PathVariable("id") int customerId,
-                         @ModelAttribute("customer") Customer customer,
+                         @ModelAttribute("customer") @Valid Customer customer,
                          BindingResult bindingResult) {
-//        personValidator.validate(person, bindingResult);
+        customerValidator.validate(customer, bindingResult);
 
-//        if (bindingResult.hasErrors()) {
-//            return "people/new";
-//        }
+        //todo работают только ошибки, найденные через customerValidator, аннотации на model классе не работают
+        if (bindingResult.hasErrors()) {
+            return "/customers/update";
+        }
         this.customerService.update(customer);
         return "redirect:/customers";
     }

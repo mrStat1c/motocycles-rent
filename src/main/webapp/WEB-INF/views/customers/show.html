@@ -29,10 +29,13 @@
 
 <a th:href="@{/customers/{id}/update(id=${customer.getId()})}">Edit</a>
 
-<!--сделать кнопку неактвиной если у чела есть арендованный мотоцикл-->
-<form th:method="DELETE" th:action="@{/customers/{id}(id=${customer.getId()})}">
+<form th:method="DELETE" th:action="@{/customers/{id}(id=${customer.getId()})}" th:if="${motoList.isEmpty()}">
     <input type="submit" value="Delete"/>
 </form>
+
+<div th:if="${!motoList.isEmpty()}" style="color:green">
+    <p>It's not possible to delete a person with a rented motorcycle</p>
+</div>
 
 </body>
 </html>

@@ -27,9 +27,8 @@
     <b><p th:text="'Free for rent'"></p></b>
     <form th:method="PATCH" th:action="@{/moto/{id}/assign(id=${moto.getId()})}">
         <label for="customer">Choose customer:</label>
-<!--        не работает из-за th:field -->
-<!--        <select id="customer" th:object="${renter}" th:field="*{id}">-->
-        <select id="customer" th:object="${renter}">
+        <!--по кнопке на /moto/{id}/assign отправится объект renter-->
+        <select id="customer" th:object="${renter}" th:field="*{id}">
             <option th:each="customer: ${customers}" th:value="${customer.getId()}" th:text="${customer.getName()}">
             </option>
         </select>
@@ -41,10 +40,13 @@
     <input type="submit" th:value="Update">
 </form>
 
-<!--сделать кнопку неактивной если мотоцикл находится в аренде-->
-<form th:method="DELETE" th:action="@{/moto/{id}(id=${moto.getId()})}">
+<form th:method="DELETE" th:action="@{/moto/{id}(id=${moto.getId()})}" th:if="${customers}">
     <input type="submit" value="Delete"/>
 </form>
+
+<div th:if="${customer}" style="color:green">
+    <p>It's not possible to delete a rented motocyle</p>
+</div>
 
 </body>
 </html>
