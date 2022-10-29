@@ -1,9 +1,11 @@
 package ru.amelin.motorent.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ru.amelin.motorent.dao.CustomerService;
 import ru.amelin.motorent.dao.MotocycleService;
@@ -11,6 +13,11 @@ import ru.amelin.motorent.models.Customer;
 import ru.amelin.motorent.models.Motocycle;
 import ru.amelin.motorent.validators.MotocycleValidator;
 
+import javax.validation.Valid;
+
+/**
+ * Обрабатывает запросы, приходящие на /moto
+ */
 @Controller
 @RequestMapping("/moto")
 public class MotocycleController {
@@ -26,6 +33,14 @@ public class MotocycleController {
         this.motocycleValidator = motocycleValidator;
     }
 
+    /**
+     * Преобразует пустые строки в null при отправке формы
+     */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
     @GetMapping
     public String index(Model model) {
         model.addAttribute("motoList", motocycleService.getAll());
@@ -37,8 +52,8 @@ public class MotocycleController {
         Motocycle motocycle = motocycleService.get(motoId);
         model.addAttribute("moto", motocycle);
         model.addAttribute("renter", new Customer());
-        if (motocycle.getCustomerId() != null) {
-            model.addAttribute("customer", customerService.get(motocycle.getCustomerId()));
+        if (motocycle.getCustomer() != null) {
+            model.addAttribute("customer", customerService.get(motocycle.getCustomer().getId()));
         } else {
             model.addAttribute("customers", customerService.getAll());
         }
@@ -51,10 +66,9 @@ public class MotocycleController {
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute("moto") Motocycle motocycle,
+    public String create(@ModelAttribute("moto") @Valid Motocycle motocycle,
                          BindingResult bindingResult) {
         motocycleValidator.validate(motocycle, bindingResult);
-        //todo работают только ошибки, найденные через motocycleValidator, аннотации на model классе не работают
         if (bindingResult.hasErrors()) {
             return "moto/create";
         }
@@ -70,10 +84,9 @@ public class MotocycleController {
 
     @PatchMapping("/{id}")
     public String update(@PathVariable("id") int motoId,
-                         @ModelAttribute("moto") Motocycle motocycle,
+                         @ModelAttribute("moto") @Valid Motocycle motocycle,
                          BindingResult bindingResult) {
         motocycleValidator.validate(motocycle, bindingResult);
-        //todo работают только ошибки, найденные через motocycleValidator, аннотации на model классе не работают
         if (bindingResult.hasErrors()) {
             return "moto/update";
         }
@@ -95,7 +108,7 @@ public class MotocycleController {
 
     @PatchMapping("/{id}/assign")
     public String assign(@PathVariable("id") int motoId, @ModelAttribute("renter") Customer customer) {
-        this.motocycleService.assign(motoId, customer.getId());
+        this.motocycleService.assign(motoId, customer);
         return "redirect:/moto/{id}";
     }
 }

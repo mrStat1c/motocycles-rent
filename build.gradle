@@ -6,8 +6,7 @@ plugins {
 group 'ru.amelin.motorent'
 version '1.0'
 
-//todo почему-то работает только на Java 8 (на других версиях возвращается 404)
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
     mavenCentral()
@@ -17,7 +16,8 @@ def springVersion = '5.3.23'
 def lombokVersion = '1.18.24'
 def thymeleafVersion = '3.1.0.M3'
 def servletApiVersion = '4.0.1'
-def hibernateValidatorVersion = '8.0.0.Final'
+def hibernateValidatorVersion = '6.2.2.Final'
+def hibernateCore = '5.6.12.Final'
 def mysqlConnectorVersion = '8.0.30'
 def log4jVersion = '2.4.1'
 
@@ -28,11 +28,13 @@ dependencies {
     implementation "org.springframework:spring-web:${springVersion}"
     implementation "org.springframework:spring-jdbc:${springVersion}"
     implementation "org.springframework:spring-webmvc:${springVersion}"
+    implementation "org.springframework:spring-orm:${springVersion}"
     implementation "org.thymeleaf:thymeleaf-spring5:${thymeleafVersion}"
     providedCompile "javax.servlet:javax.servlet-api:${servletApiVersion}"
     implementation "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     implementation "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
+    implementation "org.hibernate:hibernate-core:${hibernateCore}"
     implementation "mysql:mysql-connector-java:${mysqlConnectorVersion}"
     implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
     implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"

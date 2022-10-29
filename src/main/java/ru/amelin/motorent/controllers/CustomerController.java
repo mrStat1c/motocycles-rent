@@ -1,19 +1,25 @@
 package ru.amelin.motorent.controllers;
 
-import jakarta.validation.Valid;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import ru.amelin.motorent.dao.CustomerService;
 import ru.amelin.motorent.dao.MotocycleService;
 import ru.amelin.motorent.models.Customer;
 import ru.amelin.motorent.validators.CustomerValidator;
 
+import javax.validation.Valid;
 
+
+/**
+ * Обрабатывает запросы, приходящие на /customers
+ */
 @Controller
 @RequestMapping("/customers")
 public class CustomerController {
@@ -30,6 +36,14 @@ public class CustomerController {
         this.customerValidator = customerValidator;
     }
 
+    /**
+     * Преобразует пустые строки в null при отправке формы
+     */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
     @GetMapping
     public String index(Model model) {
         model.addAttribute("customers", customerService.getAll());
@@ -38,8 +52,9 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int customerId, Model model) {
-        model.addAttribute("customer", customerService.get(customerId));
-        model.addAttribute("motoList", motocycleService.getRentedByCustomerId(customerId));
+        Customer customer = customerService.get(customerId);
+        model.addAttribute("customer", customer);
+        model.addAttribute("motoList", motocycleService.getRentedByCustomer(customer));
         return "customers/show";
     }
 
@@ -53,7 +68,6 @@ public class CustomerController {
                          BindingResult bindingResult) {
         customerValidator.validate(customer, bindingResult);
 
-        //todo работают только ошибки, найденные через customerValidator, аннотации на model классе не работают
         if (bindingResult.hasErrors()) {
             return "customers/create";
         }
@@ -73,7 +87,6 @@ public class CustomerController {
                          BindingResult bindingResult) {
         customerValidator.validate(customer, bindingResult);
 
-        //todo работают только ошибки, найденные через customerValidator, аннотации на model классе не работают
         if (bindingResult.hasErrors()) {
             return "/customers/update";
         }
@@ -83,8 +96,7 @@ public class CustomerController {
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") int customerId) {
-       this.customerService.delete(customerId);
+        this.customerService.delete(customerId);
         return "redirect:/customers";
     }
-
 }

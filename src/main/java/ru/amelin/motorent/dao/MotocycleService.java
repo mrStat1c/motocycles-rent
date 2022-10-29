@@ -1,86 +1,101 @@
 package ru.amelin.motorent.dao;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import ru.amelin.motorent.models.Customer;
 import ru.amelin.motorent.models.Motocycle;
 
 import java.util.List;
 
+/**
+ * API для работы с объектами Motocycle
+ */
 @Component
 public class MotocycleService {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final MotocycleRowMapper rowMapper;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public MotocycleService(JdbcTemplate jdbcTemplate, MotocycleRowMapper rowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.rowMapper = rowMapper;
+    public MotocycleService(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
+    @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
     public List<Motocycle> getAll() {
-        String sql = "SELECT * FROM motocycle";
-        return this.jdbcTemplate.query(sql, this.rowMapper);
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.createQuery("FROM Motocycle").getResultList();
     }
 
+    @Transactional(readOnly = true)
     public Motocycle get(int id) {
-        String sql = "SELECT * FROM motocycle WHERE id=?";
-        return this.jdbcTemplate.query(sql, new Object[]{id}, this.rowMapper)
-                .stream()
-                .findAny()
-                .orElse(null);
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.get(Motocycle.class, id);
     }
 
-    public List<Motocycle> getRentedByCustomerId(int customerId){
-        String sql = "SELECT * FROM motocycle WHERE customer_id=?";
-        return this.jdbcTemplate.query(sql, new Object[]{customerId}, this.rowMapper);
+    @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true)
+    public List<Motocycle> getRentedByCustomer(Customer customer) {
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.createQuery("FROM Motocycle WHERE customer = :customer")
+                .setParameter("customer", customer)
+                .getResultList();
     }
 
+    @Transactional
     public void add(Motocycle motocycle) {
-        String sql = "INSERT INTO motocycle (model, vin, `release`, weight, power, type) VALUES (?, ?, ?, ?, ?, ?)";
-        this.jdbcTemplate.update(
-                sql,
-                motocycle.getModel(),
-                motocycle.getVin(),
-                motocycle.getReleaseYear(),
-                motocycle.getWeight(),
-                motocycle.getPower(),
-                motocycle.getType()
-        );
+        Session session = this.sessionFactory.getCurrentSession();
+        session.save(motocycle);
     }
 
+    @Transactional
     public void update(Motocycle motocycle) {
-        String sql = "UPDATE motocycle SET model = ?, vin = ?, `release` = ?, weight = ?, power = ?, type = ? WHERE id = ?";
-        this.jdbcTemplate.update(
-                sql,
-                motocycle.getModel(),
-                motocycle.getVin(),
-                motocycle.getReleaseYear(),
-                motocycle.getWeight(),
-                motocycle.getPower(),
-                motocycle.getType(),
-                motocycle.getId()
-        );
+        Session session = this.sessionFactory.getCurrentSession();
+        session.update(motocycle);
+
     }
 
+    @Transactional
     public void delete(int motoId) {
-        String sql = "DELETE FROM motocycle WHERE id = ?";
-        this.jdbcTemplate.update(sql, motoId);
+        Session session = this.sessionFactory.getCurrentSession();
+        session.remove(session.get(Motocycle.class, motoId));
     }
 
+    @Transactional
     public void release(int motoId) {
-        String sql = "UPDATE motocycle SET customer_id = NULL WHERE id = ?";
-        this.jdbcTemplate.update(sql, motoId);
+        Session session = this.sessionFactory.getCurrentSession();
+        session.createQuery("UPDATE Motocycle SET customer = NULL WHERE id = :id")
+                .setParameter("id", motoId)
+                .executeUpdate();
     }
 
-    public void assign(int motoId, int customerId) {
-        String sql = "UPDATE motocycle SET customer_id = ? WHERE id = ?";
-        this.jdbcTemplate.update(sql, customerId, motoId);
+    @Transactional
+    public void assign(int motoId, Customer customer) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.createQuery("UPDATE Motocycle SET customer = :customer WHERE id = :id")
+                .setParameter("customer", customer)
+                .setParameter("id", motoId)
+                .executeUpdate();
     }
 
+    @Transactional(readOnly = true)
     public boolean exists(String vin) {
-        String sql = "SELECT * FROM motocycle WHERE vin=?";
-        return this.jdbcTemplate.query(sql, new Object[]{vin}, this.rowMapper).size() > 0;
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.createQuery("FROM Motocycle WHERE vin=:vin", Motocycle.class)
+                .setParameter("vin", vin)
+                .uniqueResultOptional()
+                .isPresent();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean exists(int motoId) {
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.createQuery("FROM Motocycle WHERE id=:id", Motocycle.class)
+                .setParameter("id", motoId)
+                .uniqueResultOptional()
+                .isPresent();
     }
 }

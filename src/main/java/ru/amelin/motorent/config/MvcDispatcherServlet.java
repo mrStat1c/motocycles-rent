@@ -10,6 +10,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import java.util.EnumSet;
 
+/**
+ * Настройки DispatcheServlet (входная точка приложения)
+ */
 public class MvcDispatcherServlet extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
@@ -42,13 +45,12 @@ public class MvcDispatcherServlet extends AbstractAnnotationConfigDispatcherServ
     }
 
     //добавляет поддержку русского языка
-    //todo не работает
     private void registerCharacterEncodingFilter(ServletContext aContext){
         EnumSet<DispatcherType> dispatcherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD);
         CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
         characterEncodingFilter.setEncoding("UTF-8");
         characterEncodingFilter.setForceEncoding(true);
         FilterRegistration.Dynamic characterEncoding = aContext.addFilter("characterEncoding", characterEncodingFilter);
-        characterEncoding.addMappingForUrlPatterns(dispatcherTypes, true, "/*");
+        characterEncoding.addMappingForUrlPatterns(dispatcherTypes, false, "/*");
     }
 }

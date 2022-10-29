@@ -7,6 +7,9 @@ import org.springframework.validation.Validator;
 import ru.amelin.motorent.dao.CustomerService;
 import ru.amelin.motorent.models.Customer;
 
+/**
+ * Валидатор объектов Customer
+ */
 @Component
 public class CustomerValidator implements Validator {
 
@@ -26,8 +29,14 @@ public class CustomerValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         Customer customer = (Customer) target;
-        if (customerService.exists(customer.getDriverLicenseNumber())) {
-            errors.rejectValue("driverLicenseNumber", "", "Customer with same driver license number is already exists");
+        // Проверку уникальности в бд driver_lic нужно выполнять в одном из двух случаев:
+        // 1) Customer новый (т.е. не существует в бд)
+        // 2) Customer обновляется (т.е. существует в бд) и на форме введен новый номер DriverLicenseNumber (отличается от значения в бд)
+        int id = customer.getId();
+        if (!customerService.exists(id) || !customerService.get(id).getDriverLicenseNumber().equals(customer.getDriverLicenseNumber())) {
+            if (customerService.exists(customer.getDriverLicenseNumber())) {
+                errors.rejectValue("driverLicenseNumber", "", "Customer with same driver license number is already exists");
+            }
         }
     }
 }

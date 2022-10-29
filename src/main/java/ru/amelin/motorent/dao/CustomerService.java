@@ -1,72 +1,77 @@
 package ru.amelin.motorent.dao;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import ru.amelin.motorent.models.Customer;
 
 import java.util.List;
 
+/**
+ * API для работы с объектами Customer
+ */
 @Component
 public class CustomerService {
 
-    private final JdbcTemplate jdbcTemplate;
-    private final CustomerRowMapper rowMapper;
+    private final SessionFactory sessionFactory;
 
     @Autowired
-    public CustomerService(JdbcTemplate jdbcTemplate, CustomerRowMapper rowMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.rowMapper = rowMapper;
+    public CustomerService(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
+    // Transactional нужна для того, чтобы Spring сам открывал и закрывал транзакцию
+    // readOnly = true не обязательно, но вроде как может в теории иногда ускорить работу
+    @Transactional(readOnly = true)
     public List<Customer> getAll() {
-        String sql = "SELECT * FROM customer";
-        return this.jdbcTemplate.query(sql, this.rowMapper);
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.createQuery("FROM Customer", Customer.class)
+                .getResultList();
     }
 
+    @Transactional(readOnly = true)
     public Customer get(int id) {
-        String sql = "SELECT * FROM customer WHERE id=?";
-        return this.jdbcTemplate.query(sql, new Object[]{id}, this.rowMapper)
-                .stream()
-                .findAny()
-                .orElse(null);
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.get(Customer.class, id);
     }
 
+    @Transactional
     public void add(Customer customer) {
-        String sql = "INSERT INTO customer (name, age, driver_exp, driver_lic, email, phone) VALUES (?, ?, ?, ?, ?, ?)";
-        this.jdbcTemplate.update(
-                sql,
-                customer.getName(),
-                customer.getAge(),
-                customer.getDriveExperience(),
-                customer.getDriverLicenseNumber(),
-                customer.getEmail(),
-                customer.getPhoneNumber()
-        );
+        Session session = this.sessionFactory.getCurrentSession();
+        session.save(customer);
     }
 
+    @Transactional
     public void update(Customer customer) {
-        String sql = "UPDATE customer SET name = ?, age = ?, driver_exp = ?, driver_lic = ?, email = ?, phone = ? WHERE id = ?";
-        this.jdbcTemplate.update(
-                sql,
-                customer.getName(),
-                customer.getAge(),
-                customer.getDriveExperience(),
-                customer.getDriverLicenseNumber(),
-                customer.getEmail(),
-                customer.getPhoneNumber(),
-                customer.getId()
-        );
+        Session session = this.sessionFactory.getCurrentSession();
+        session.update(customer);
+
     }
 
+    @Transactional
     public void delete(int customerId) {
-        String sql = "DELETE FROM customer WHERE id = ?";
-        this.jdbcTemplate.update(sql, customerId);
+        Session session = this.sessionFactory.getCurrentSession();
+        session.remove(session.get(Customer.class, customerId));
     }
 
-    public boolean exists(String driver_lic) {
-        String sql = "SELECT * FROM customer WHERE driver_lic=?";
-        return this.jdbcTemplate.query(sql, new Object[]{driver_lic}, this.rowMapper).size() > 0;
+    @Transactional(readOnly = true)
+    public boolean exists(String driverLic) {
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.createQuery("FROM Customer WHERE driverLicenseNumber=:lic")
+                .setParameter("lic", driverLic)
+                .uniqueResultOptional()
+                .isPresent();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean exists(int customerId) {
+        Session session = this.sessionFactory.getCurrentSession();
+        return session.createQuery("FROM Customer WHERE id=:id")
+                .setParameter("id", customerId)
+                .uniqueResultOptional()
+                .isPresent();
     }
 }
 
