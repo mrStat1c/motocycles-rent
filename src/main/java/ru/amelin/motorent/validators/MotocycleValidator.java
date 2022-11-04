@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import ru.amelin.motorent.dao.MotocycleService;
 import ru.amelin.motorent.models.Motocycle;
+import ru.amelin.motorent.services.MotocycleService;
 
 /**
  * Валидатор объектов Motocycle

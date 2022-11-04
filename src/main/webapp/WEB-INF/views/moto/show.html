@@ -14,7 +14,7 @@
 <p th:text="'Release year: ' + ${moto.getReleaseYear()}"></p>
 <p th:text="'Weight: ' + ${moto.getWeight()}"></p>
 <p th:text="'Power: ' + ${moto.getPower()}"></p>
-<p th:text="'Type: ' + ${moto.getType()}" th:if="${moto.getType() != NULL}"></p>
+<p th:text="'Type: ' + ${moto.getMotoType()}" th:if="${moto.getMotoType() != NULL}"></p>
 
 <div th:if="${customer}">
     <b><p th:text="'Rented by: ' + ${customer.getName()}"></p></b>

@@ -8,16 +8,22 @@
 
 <body>
 
+<form th:method="GET" th:action="@{/customers/index}">
+    <label for="namePart">Enter name part:</label>
+    <input type="text" id="namePart" name="namePart"/>
+    <input type="submit" value="Search">
+</form>
 
 <p><b>Customers:</b></p>
 <div th:each="customer : ${customers}">
     <a th:href="@{/customers/{id}(id=${customer.getId()})}"
        th:text="${customer.getName() + ', ' + customer.getDriverLicenseNumber()}"></a>
 </div>
-
-<br/>
-<hr/>
-
+<div th:if="${customers.isEmpty()}">
+    <span>Customers not found!</span>
+</div>
+<br>
+<hr>
 <a href="/motorent/customers/create">Create new customer</a>
 
 <br>

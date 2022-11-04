@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.util.Date;
 
 /**
  * Entity класс для маппинга на таблицу motocycle
@@ -37,10 +38,12 @@ public class Motocycle {
     @Min(value = 1)
     @Max(value = 999)
     private int power;
-    @Column
-    private String type;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private MotoType motoType;
+    @Transient
+    private Date created;
     @ManyToOne
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
     private Customer customer;
-
 }

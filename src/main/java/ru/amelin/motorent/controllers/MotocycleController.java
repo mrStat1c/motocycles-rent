@@ -7,10 +7,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import ru.amelin.motorent.dao.CustomerService;
-import ru.amelin.motorent.dao.MotocycleService;
 import ru.amelin.motorent.models.Customer;
 import ru.amelin.motorent.models.Motocycle;
+import ru.amelin.motorent.services.CustomerService;
+import ru.amelin.motorent.services.MotocycleService;
 import ru.amelin.motorent.validators.MotocycleValidator;
 
 import javax.validation.Valid;
@@ -90,7 +90,7 @@ public class MotocycleController {
         if (bindingResult.hasErrors()) {
             return "moto/update";
         }
-        this.motocycleService.update(motocycle);
+        this.motocycleService.update(motoId, motocycle);
         return "redirect:/moto";
     }
 

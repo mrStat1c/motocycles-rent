@@ -44,11 +44,10 @@
     </div>
     <br>
     <label for="type">Enter type: </label>
-    <input type="text" th:field="*{type}" id="type"/>
-    <div style="color:red"
-         th:if="${#fields.hasErrors('type')}"
-         th:errors="*{type}">
-    </div>
+    <select id="type" th:field="*{motoType}">
+        <option th:each="motoType : ${T(ru.amelin.motorent.models.MotoType).values()}"
+                th:value="${motoType}" th:text="${motoType}"></option>
+    </select>
     <br>
     <input type="submit" value="Update">
 

@@ -24,6 +24,10 @@ http://localhost:8080/motorent/moto
 ###Branches:
 **master**
 <br/>
+взаимодействие с бд с помощью Spring Data HPA
+
+**hibernate**
+<br/>
 взаимодействие с бд с помощью Hibernate
 
 **jdbcTemplate**

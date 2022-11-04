@@ -9,12 +9,13 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import ru.amelin.motorent.dao.CustomerService;
-import ru.amelin.motorent.dao.MotocycleService;
 import ru.amelin.motorent.models.Customer;
+import ru.amelin.motorent.services.CustomerService;
+import ru.amelin.motorent.services.MotocycleService;
 import ru.amelin.motorent.validators.CustomerValidator;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 /**
@@ -50,11 +51,23 @@ public class CustomerController {
         return "customers/index";
     }
 
+    @GetMapping("/index")
+    public String index(Model model, @RequestParam(value = "namePart", required = false) String namePart) {
+        List<Customer> customerList;
+        if (namePart == null) {
+            customerList = this.customerService.getAll();
+        } else {
+            customerList = this.customerService.search(namePart);
+        }
+        model.addAttribute("customers", customerList);
+        return "customers/index";
+    }
+
     @GetMapping("/{id}")
     public String show(@PathVariable("id") int customerId, Model model) {
-        Customer customer = customerService.get(customerId);
+        Customer customer = this.customerService.get(customerId);
         model.addAttribute("customer", customer);
-        model.addAttribute("motoList", motocycleService.getRentedByCustomer(customer));
+        model.addAttribute("motoList", this.motocycleService.findByCustomer(customer));
         return "customers/show";
     }
 
@@ -66,7 +79,7 @@ public class CustomerController {
     @PostMapping("/create")
     public String create(@ModelAttribute("customer") @Valid Customer customer,
                          BindingResult bindingResult) {
-        customerValidator.validate(customer, bindingResult);
+        this.customerValidator.validate(customer, bindingResult);
 
         if (bindingResult.hasErrors()) {
             return "customers/create";
@@ -77,7 +90,7 @@ public class CustomerController {
 
     @GetMapping("/{id}/update")
     public String updateForm(@PathVariable("id") int customerId, Model model) {
-        model.addAttribute("customer", customerService.get(customerId));
+        model.addAttribute("customer", this.customerService.get(customerId));
         return "customers/update";
     }
 
@@ -85,12 +98,12 @@ public class CustomerController {
     public String update(@PathVariable("id") int customerId,
                          @ModelAttribute("customer") @Valid Customer customer,
                          BindingResult bindingResult) {
-        customerValidator.validate(customer, bindingResult);
+        this.customerValidator.validate(customer, bindingResult);
 
         if (bindingResult.hasErrors()) {
             return "/customers/update";
         }
-        this.customerService.update(customer);
+        this.customerService.update(customerId, customer);
         return "redirect:/customers";
     }
 
